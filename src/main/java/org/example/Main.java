@@ -14,7 +14,7 @@ import java.util.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        long startTime = System.nanoTime();
+        //long startTime = System.nanoTime();
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -52,11 +52,12 @@ public class Main {
         }
 
         List<Element> elementList = new ArrayList<>();
+        viewSpots = (TreeSet<Element>) viewSpots.descendingSet();
 
         //Adds the first N elements of the tree to a list
         for (int i = 0; i < Integer.valueOf(args[1]); i++) {
             if (!viewSpots.isEmpty())
-                elementList.add(viewSpots.descendingSet().pollFirst());
+                elementList.add(viewSpots.pollFirst());
             else
                 break;
         }
@@ -70,7 +71,7 @@ public class Main {
 
         System.out.println(json);
 
-        long endTime = System.nanoTime();
+        /*long endTime = System.nanoTime();
         long executionTime = endTime - startTime;
         Duration duration = Duration.ofNanos(executionTime);
 
@@ -79,7 +80,7 @@ public class Main {
         long milliseconds = duration.minusMinutes(minutes).minusSeconds(seconds).toMillis();
 
         String formattedTime = String.format("%d:%02d.%03d", minutes, seconds, milliseconds);
-        System.out.println("Execution time: " + formattedTime);
+        System.out.println("Execution time: " + formattedTime);*/
     }
 
     private static List<TreeSet<Element>> createNodeList(JsonNode nodesNode) throws JsonProcessingException {
