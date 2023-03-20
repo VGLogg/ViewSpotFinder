@@ -40,4 +40,9 @@ public class Element implements Comparable<Element>{
     public double getValue() {
         return value;
     }
+
+    @JsonProperty("id")
+    public void setId(int id) {
+        this.id = id;
+    }
 }
