@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -33,7 +34,8 @@ public class Main {
 
         //Add each element to the nodes that it has
         for (Element element : elementsMap.values()) {
-            for (int nodeId : element.getNodes()) {prioNodes.get(nodeId).add(element);
+            for (int nodeId : element.getNodes()) {
+                prioNodes.get(nodeId).add(element);
             }
         }
 
@@ -47,30 +49,27 @@ public class Main {
 
         //Adds the remaining elements to a new tree
         for (TreeSet<Element> set : prioNodes) {
-                viewSpots.add(set.first());
+            viewSpots.add(set.first());
         }
 
         List<Element> elementList = new ArrayList<>();
 
         //Adds the first N elements of the tree to a list
-        for (int i = 0; i < Integer.valueOf(args[1]); i++ ){
-            elementList.add(viewSpots.descendingSet().pollFirst());
-            //System.out.println(viewSpots.descendingSet().pollFirst().getValue() + " " + viewSpots.descendingSet().pollFirst().getId());
+        for (int i = 0; i < Integer.valueOf(args[1]); i++) {
+            if (!viewSpots.isEmpty())
+                elementList.add(viewSpots.descendingSet().pollFirst());
+            else
+                break;
         }
 
         //changes mapper to use the ignoring rule for nodes property of element
         mapper.addMixIn(Element.class, IgnoreNodesPropertyMixin.class);
 
         //generates a json String
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
         String json = mapper.writeValueAsString(elementList);
 
-        try{
-            FileWriter fileWriter = new FileWriter("output.json");
-            fileWriter.write(json);
-            fileWriter.close();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+        System.out.println(json);
 
         long endTime = System.nanoTime();
         long executionTime = endTime - startTime;
@@ -86,7 +85,8 @@ public class Main {
 
     private static List<TreeSet<Element>> createNodeList(JsonNode nodesNode) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        List<Node> nodes = mapper.readValue(nodesNode.toString(), new TypeReference<List<Node>>() {});
+        List<Node> nodes = mapper.readValue(nodesNode.toString(), new TypeReference<List<Node>>() {
+        });
         List<TreeSet<Element>> prioNodes = new ArrayList<>();
 
         for (Node node : nodes) {
@@ -96,7 +96,7 @@ public class Main {
         return prioNodes;
     }
 
-    private static Map<Integer, Element> createElementMap(JsonNode elements ,JsonNode values){
+    private static Map<Integer, Element> createElementMap(JsonNode elements, JsonNode values) {
         ObjectMapper mapper = new ObjectMapper();
         Map<Integer, Element> elementsMap = new HashMap<>();
 
